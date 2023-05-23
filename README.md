@@ -1,1 +1,1 @@
-# rn-hw1
+# goit-react-native-hw-01
