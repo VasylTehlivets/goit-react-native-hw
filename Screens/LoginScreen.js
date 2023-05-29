@@ -35,7 +35,6 @@ export default function Login({ style }) {
       }
     );
 
-    // Повернути функцію для очищення підписок на події клавіатури при розмонтуванні компонента
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -203,7 +202,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 120,
   },
   passwordContainer: {
-    position: "relative", // Додаємо позицію "relative" для контейнера пароля
+    position: "relative",
   },
   showPasswordButton: {
     position: "absolute",
