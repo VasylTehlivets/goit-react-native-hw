@@ -57,21 +57,21 @@ export default function Registration({ style }) {
         style={styles.image}
         source={require("../assets/images/Photo_BG.jpg")}
       >
-        <View style={styles.photoContainer}>
-          <Image
-            style={styles.avatarBG}
-            source={require("../assets/images/avatarBG.jpg")}
-          ></Image>
-          {/* <View style={styles.avatarBG}></View> */}
-        </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ ...styles.form, paddingBottom: isShowKeyboard ? 80 : 7 }}
-          // style={[styles.form, { paddingBottom: isShowKeyboard ? 80 : 7 }]}
+          style={{
+            ...styles.form,
+            paddingBottom: isShowKeyboard ? 80 : 7,
+          }}
         >
-          {/* <View style={styles.form}> */}
-          <View style={styles.photoAdd}>
-            <Image source={require("../assets/images/add.jpg")}></Image>
+          <View style={styles.photoContainer}>
+            <Image
+              style={styles.avatarBG}
+              source={require("../assets/images/avatarBG.jpg")}
+            ></Image>
+            <View style={styles.photoAdd}>
+              <Image source={require("../assets/images/union.jpg")}></Image>
+            </View>
           </View>
           <View>
             <Text style={styles.formTitle}>Реєстрація</Text>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   // },
   photoContainer: {
     position: "absolute",
-    top: "18%",
+    top: 0,
     left: 0,
     right: 0,
     zIndex: 10,
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     color: "#212121",
     fontSize: 16,
-    // fontWeight: 400,
   },
   btn: {
     marginTop: 29,
@@ -232,7 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#212121",
     borderRadius: 100,
     borderWidth: 3,
-    // borderColor: "#212121",
     marginHorizontal: 120,
   },
   passwordContainer: {
@@ -252,8 +250,16 @@ const styles = StyleSheet.create({
   },
   photoAdd: {
     position: "absolute",
-    top: "3%",
-    left: "66%",
+    top: 15,
+    left: "62%",
     zIndex: 100,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    borderRadius: 50,
+    width: 25,
+    height: 25,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
