@@ -12,7 +12,7 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useFonts } from "expo-font";
+import { useNavigation } from "@react-navigation/native";
 
 const initialState = {
   login: "",
@@ -21,6 +21,8 @@ const initialState = {
 };
 
 export default function Registration({ style }) {
+  const navigation = useNavigation();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -43,16 +45,8 @@ export default function Registration({ style }) {
     setIsShowKeyboard(false);
     console.log(state);
     setState(initialState);
+    navigation.navigate("Home");
   };
-
-  const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -157,7 +151,10 @@ export default function Registration({ style }) {
                 >
                   <Text style={styles.btnTitle}>Зареєструватися</Text>
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Login")}
+                  activeOpacity={0.8}
+                >
                   <Text style={styles.textTitle}>Вже є акаунт? Увійти</Text>
                 </TouchableOpacity>
                 <View style={styles.borderLine}></View>

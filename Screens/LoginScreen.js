@@ -11,7 +11,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useFonts } from "expo-font";
+import { useNavigation } from "@react-navigation/native";
 
 const initialState = {
   email: "",
@@ -19,6 +19,8 @@ const initialState = {
 };
 
 export default function Login({ style }) {
+  const navigation = useNavigation();
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [state, setState] = useState(initialState);
@@ -38,20 +40,12 @@ export default function Login({ style }) {
     setIsFocused(null);
   };
 
-  const onLogion = () => {
+  const onLogin = () => {
     setIsShowKeyboard(false);
     console.log(state);
     setState(initialState);
+    navigation.navigate("Home");
   };
-
-  const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -122,11 +116,15 @@ export default function Login({ style }) {
                 <TouchableOpacity
                   style={styles.btn}
                   activeOpacity={0.8}
-                  onPress={onLogion}
+                  onPress={onLogin}
                 >
                   <Text style={styles.btnTitle}>Увійти</Text>
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Registration")}
+                  // title="Зареєструватися"
+                  activeOpacity={0.8}
+                >
                   <Text style={styles.textTitle}>
                     Немає акаунту? Зареєструватися
                   </Text>
