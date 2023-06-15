@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ImageBackground,
@@ -9,22 +9,20 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Image,
   TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const initialState = {
-  login: "",
   email: "",
   password: "",
 };
 
-export default function Registration({ style }) {
+export default function Login({ style }) {
   const navigation = useNavigation();
 
-  const [showPassword, setShowPassword] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [state, setState] = useState(initialState);
   const [isFocused, setIsFocused] = useState(null);
 
@@ -41,7 +39,8 @@ export default function Registration({ style }) {
     setIsShowKeyboard(false);
     setIsFocused(null);
   };
-  const onRegistration = () => {
+
+  const onLogin = () => {
     setIsShowKeyboard(false);
     console.log(state);
     setState(initialState);
@@ -53,47 +52,17 @@ export default function Registration({ style }) {
       <View style={[styles.container, style]}>
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/Photo_BG.jpg")}
+          source={require("../../assets/images/Photo_BG.jpg")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : null}
             style={[
               styles.form,
-              // isShowKeyboard && Platform.OS === "ios"
-              //   ? { paddingBottom: 80 }
-              //   : { paddingTop: 92 },
-              { paddingBottom: isShowKeyboard ? 32 : 7, paddingTop: 92 },
+              { paddingBottom: isShowKeyboard ? 32 : 7, paddingTop: 32 },
             ]}
           >
-            <View style={styles.photoContainer}>
-              <Image
-                style={styles.avatarBG}
-                source={require("../assets/images/avatarBG.jpg")}
-              ></Image>
-              <View style={styles.photoAdd}>
-                <Image source={require("../assets/images/union.jpg")}></Image>
-              </View>
-            </View>
             <View>
-              <Text style={styles.formTitle}>Реєстрація</Text>
-            </View>
-            <View>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    borderColor: isFocused === "login" ? "#FF6C00" : "#E8E8E8",
-                  },
-                ]}
-                placeholder="Логін"
-                placeholderTextColor={"#BDBDBD"}
-                onFocus={() => handleInputFocus("login")}
-                onBlur={handleInputBlur}
-                value={state.login}
-                onChangeText={(value) =>
-                  setState((prevstate) => ({ ...prevstate, login: value }))
-                }
-              />
+              <Text style={styles.formTitle}>Увійти</Text>
             </View>
             <View>
               <TextInput
@@ -110,7 +79,7 @@ export default function Registration({ style }) {
                 onBlur={handleInputBlur}
                 value={state.email}
                 onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, email: value }))
+                  setState((prevstate) => ({ ...prevstate, email: value }))
                 }
               />
             </View>
@@ -130,7 +99,7 @@ export default function Registration({ style }) {
                 onBlur={handleInputBlur}
                 value={state.password}
                 onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, password: value }))
+                  setState((prevstate) => ({ ...prevstate, password: value }))
                 }
               />
               <TouchableOpacity
@@ -147,15 +116,18 @@ export default function Registration({ style }) {
                 <TouchableOpacity
                   style={styles.btn}
                   activeOpacity={0.8}
-                  onPress={onRegistration}
+                  onPress={onLogin}
                 >
-                  <Text style={styles.btnTitle}>Зареєструватися</Text>
+                  <Text style={styles.btnTitle}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Login")}
+                  onPress={() => navigation.navigate("Registration")}
+                  // title="Зареєструватися"
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.textTitle}>Вже є акаунт? Увійти</Text>
+                  <Text style={styles.textTitle}>
+                    Немає акаунту? Зареєструватися
+                  </Text>
                 </TouchableOpacity>
                 <View style={styles.borderLine}></View>
               </>
@@ -175,20 +147,14 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     justifyContent: "center",
+    // alignItems: "center",
   },
-  photoContainer: {
+  photoBG: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
+    // left: 128,
+    top: 50,
     zIndex: 10,
-    alignItems: "center",
-  },
-  avatarBG: {
-    position: "absolute",
-    top: -60,
-    left: "50%",
-    transform: [{ translateX: -60 }],
+    marginHorizontal: 128,
     backgroundColor: "#F6F6F6",
     borderRadius: 16,
     width: 120,
@@ -203,7 +169,7 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 25,
     borderTopRightRadius: 25,
     paddingHorizontal: 16,
-    // paddingTop: 92,
+    // paddingTop: 32,
     // paddingBottom: 7,
     gap: 16,
     // height: 549,
@@ -251,7 +217,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textAlign: "center",
-    marginBottom: 52,
+    marginBottom: 116,
     fontFamily: "Roboto-Regular",
   },
   borderLine: {
@@ -274,19 +240,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     fontFamily: "Roboto-Regular",
-  },
-  photoAdd: {
-    position: "absolute",
-    top: 15,
-    left: "62%",
-    zIndex: 100,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 50,
-    width: 25,
-    height: 25,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

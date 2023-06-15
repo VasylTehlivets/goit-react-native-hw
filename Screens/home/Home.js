@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
@@ -16,7 +17,13 @@ const Home = ({ navigation }) => {
       // initialRouteName="PostsScreen"
       screenOptions={({ route }) => ({
         tabBarShowLabel: false,
-        tabBarStyle: { height: 58 },
+        tabBarStyle: (route) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+          if (routeName === "Comments" || routeName === "Map") {
+            return { display: "none" };
+          }
+          return { height: 58 };
+        },
         tabBarInactiveTintColor: "rgba(33, 33, 33, 0.8)",
         tabBarActiveTintColor: "#FFFFFF",
         tabBarIcon: ({ focused, color, size }) => {
@@ -78,6 +85,7 @@ const Home = ({ navigation }) => {
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
+          headerShown: false,
         }}
       />
       <MainTab.Screen
@@ -115,6 +123,7 @@ const Home = ({ navigation }) => {
               />
             </TouchableOpacity>
           ),
+          headerShown: false,
         }}
       />
       <MainTab.Screen

@@ -4,8 +4,8 @@ import "react-native-gesture-handler";
 import { createStackNavigator } from "@react-navigation/stack";
 // import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import Registration from "./Screens/RegistrationScreen";
-import Login from "./Screens/LoginScreen";
+import Registration from "./Screens/auth/RegistrationScreen";
+import Login from "./Screens/auth/LoginScreen";
 import Home from "./Screens/home/Home";
 
 const AuthStack = createStackNavigator();
