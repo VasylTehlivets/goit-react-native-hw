@@ -8,24 +8,45 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+
+import { db } from "../../firebase/config";
+import { onSnapshot, collection, query, orderBy } from "firebase/firestore";
 
 const DefaultPostsScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
+  const { avatar, login, email, userId } = useSelector((state) => state.auth);
+
+  const getAllPosts = async () => {
+    const postsQuery = query(
+      collection(db, "posts"),
+      orderBy("createdDate", "desc")
+    );
+
+    onSnapshot(postsQuery, (data) => {
+      setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    //   if (route.params) {
+    //     setPosts((prevState) => [...prevState, route.params]);
+    //   }
+    // }, [route.params]);
+    getAllPosts();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.userContainer}>
-        <Image
+        {/* <Image
           source={require("../../assets/images/avatarBG.jpg")}
           style={styles.userImage}
-        />
+        /> */}
+        <Image source={{ uri: avatar }} style={styles.userImage} />
         <View>
-          <Text style={styles.userName}>Natali Romanova</Text>
+          {/* <Text style={styles.userName}>Natali Romanova</Text>
+          <Text style={styles.userName}>{login}</Text> */}
           <Text
             style={{
               fontSize: 11,
@@ -34,7 +55,8 @@ const DefaultPostsScreen = ({ route, navigation }) => {
               fontFamily: "Roboto-Regular",
             }}
           >
-            email@example.com
+            {/* email@example.com */}
+            {email}
           </Text>
         </View>
       </View>
@@ -47,19 +69,32 @@ const DefaultPostsScreen = ({ route, navigation }) => {
             <Text style={styles.itemTitle}>{item.titlePhoto}</Text>
             <View style={styles.description}>
               <View style={styles.comments}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => navigation.navigate("Comments")}
+                > */}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      postId: item.id,
+                      postPhoto: item.photo,
+                      autorPostId: item.userId,
+                    })
+                  }
                 >
                   <Feather
                     name="message-circle"
                     size={24}
-                    color={"#BDBDBD"}
+                    // color={"#BDBDBD"}
+                    color={item.commentsQuantity > 0 ? "#FF6C00" : "#BDBDBD"}
                     style={{
                       marginRight: 9,
                     }}
                   />
                 </TouchableOpacity>
-                <Text style={styles.commentsAmount}>8</Text>
+                {/* <Text style={styles.commentsAmount}>8</Text> */}
+                <Text style={styles.commentsAmount}>
+                  {item.commentsQuantity ? item.commentsQuantity : "0"}
+                </Text>{" "}
               </View>
               <View style={styles.likes}>
                 <TouchableOpacity>

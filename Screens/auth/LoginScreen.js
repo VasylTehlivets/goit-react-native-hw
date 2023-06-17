@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   ImageBackground,
@@ -12,19 +12,25 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperation";
 
-const initialState = {
-  email: "",
-  password: "",
-};
+// const initialState = {
+//   email: "",
+//   password: "",
+// };
 
 export default function Login({ style }) {
   const navigation = useNavigation();
 
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [state, setState] = useState(initialState);
+  // const [state, setState] = useState(initialState);
   const [isFocused, setIsFocused] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -41,10 +47,13 @@ export default function Login({ style }) {
   };
 
   const onLogin = () => {
-    setIsShowKeyboard(false);
-    console.log(state);
-    setState(initialState);
-    navigation.navigate("Home");
+    // setIsShowKeyboard(false);
+    // console.log(state);
+    // setState(initialState);
+    // navigation.navigate("Home");
+    dispatch(authSignInUser({ email, password }));
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -77,10 +86,8 @@ export default function Login({ style }) {
                 // onFocus={handleInputFocus}
                 onFocus={() => handleInputFocus("email")}
                 onBlur={handleInputBlur}
-                value={state.email}
-                onChangeText={(value) =>
-                  setState((prevstate) => ({ ...prevstate, email: value }))
-                }
+                value={email}
+                onChangeText={(value) => setEmail(value)}
               />
             </View>
             <View style={styles.passwordContainer}>
@@ -97,10 +104,8 @@ export default function Login({ style }) {
                 placeholderTextColor={"#BDBDBD"}
                 onFocus={() => handleInputFocus("password")}
                 onBlur={handleInputBlur}
-                value={state.password}
-                onChangeText={(value) =>
-                  setState((prevstate) => ({ ...prevstate, password: value }))
-                }
+                value={password}
+                onChangeText={(value) => setPassword(value)}
               />
               <TouchableOpacity
                 style={styles.showPasswordButton}

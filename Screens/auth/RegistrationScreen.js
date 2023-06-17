@@ -12,21 +12,37 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+import { useDispatch } from "react-redux";
+
+import * as ImagePicker from "expo-image-picker";
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+
+import { authSignUpUser } from "../../redux/auth/authOperation";
+
+import { storage } from "../../firebase/config";
 import { useNavigation } from "@react-navigation/native";
 
-const initialState = {
-  login: "",
-  email: "",
-  password: "",
-};
+// const initialState = {
+//   login: "",
+//   email: "",
+//   password: "",
+// };
 
 export default function Registration({ style }) {
   const navigation = useNavigation();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setState] = useState(initialState);
+  // const [state, setState] = useState(initialState);
   const [isFocused, setIsFocused] = useState(null);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [avatar, setAvatar] = useState(null);
+
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -41,11 +57,48 @@ export default function Registration({ style }) {
     setIsShowKeyboard(false);
     setIsFocused(null);
   };
-  const onRegistration = () => {
-    setIsShowKeyboard(false);
-    console.log(state);
-    setState(initialState);
-    navigation.navigate("Home");
+
+  const pickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatar(null);
+  };
+
+  const uploadPhotoToServer = async () => {
+    let imageRef;
+
+    if (avatar) {
+      const response = await fetch(avatar);
+      const file = await response.blob();
+      const uniqueAvatarId = Date.now().toString();
+      imageRef = ref(storage, `userAvatars/${uniqueAvatarId}`);
+      await uploadBytes(imageRef, file);
+    }
+
+    const processedPhoto = await getDownloadURL(imageRef);
+    return processedPhoto;
+  };
+
+  const onRegistration = async () => {
+    // setIsShowKeyboard(false);
+    // console.log(state);
+    // setState(initialState);
+    // navigation.navigate("Home");
+    const photo = await uploadPhotoToServer();
+    dispatch(authSignUpUser({ login, email, password, avatar: photo }));
+    setLogin("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -59,22 +112,32 @@ export default function Registration({ style }) {
             behavior={Platform.OS === "ios" ? "padding" : null}
             style={[
               styles.form,
-              // isShowKeyboard && Platform.OS === "ios"
-              //   ? { paddingBottom: 80 }
-              //   : { paddingTop: 92 },
               { paddingBottom: isShowKeyboard ? 32 : 7, paddingTop: 92 },
             ]}
           >
             <View style={styles.photoContainer}>
               <Image
                 style={styles.avatarBG}
-                source={require("../../assets/images/avatarBG.jpg")}
+                source={{ uri: avatar }}
+                // style={styles.avatarImage}
               ></Image>
-              <View style={styles.photoAdd}>
-                <Image
-                  source={require("../../assets/images/union.jpg")}
-                ></Image>
-              </View>
+              {!avatar ? (
+                <TouchableOpacity
+                  style={styles.btnAddAvatar}
+                  activeOpacity={0.9}
+                  onPress={pickAvatar}
+                >
+                  <Ionicons name="add" size={20} color="#FF6C00" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.btnRemoveAvatar}
+                  activeOpacity={0.9}
+                  onPress={removeAvatar}
+                >
+                  <Ionicons name="close" size={20} color="#E8E8E8" />
+                </TouchableOpacity>
+              )}
             </View>
             <View>
               <Text style={styles.formTitle}>Реєстрація</Text>
@@ -91,10 +154,8 @@ export default function Registration({ style }) {
                 placeholderTextColor={"#BDBDBD"}
                 onFocus={() => handleInputFocus("login")}
                 onBlur={handleInputBlur}
-                value={state.login}
-                onChangeText={(value) =>
-                  setState((prevstate) => ({ ...prevstate, login: value }))
-                }
+                value={login}
+                onChangeText={(value) => setLogin(value)}
               />
             </View>
             <View>
@@ -110,10 +171,8 @@ export default function Registration({ style }) {
                 // onFocus={handleInputFocus}
                 onFocus={() => handleInputFocus("email")}
                 onBlur={handleInputBlur}
-                value={state.email}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, email: value }))
-                }
+                value={email}
+                onChangeText={(value) => setEmail(value)}
               />
             </View>
             <View style={styles.passwordContainer}>
@@ -130,10 +189,8 @@ export default function Registration({ style }) {
                 placeholderTextColor={"#BDBDBD"}
                 onFocus={() => handleInputFocus("password")}
                 onBlur={handleInputBlur}
-                value={state.password}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, password: value }))
-                }
+                value={password}
+                onChangeText={(value) => setPassword(value)}
               />
               <TouchableOpacity
                 style={styles.showPasswordButton}
@@ -221,6 +278,34 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Roboto-Medium",
     // letterSpacing: 0.01,
+  },
+  btnAddAvatar: {
+    position: "absolute",
+    bottom: -38,
+    right: 118,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 25,
+    height: 25,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#FF6C00",
+  },
+  btnRemoveAvatar: {
+    position: "absolute",
+    bottom: -38,
+    right: 118,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 25,
+    height: 25,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#E8E8E8",
   },
   input: {
     borderWidth: 1,

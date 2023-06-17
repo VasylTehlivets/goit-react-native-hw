@@ -9,6 +9,11 @@ import * as MediaLibrary from "expo-media-library";
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
+import { storage, db } from "../../firebase/config";
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import { useSelector } from "react-redux";
+
 const CreatePostsScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
@@ -16,6 +21,8 @@ const CreatePostsScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [titlePhoto, setTitlePhoto] = useState("");
   const [place, setPlace] = useState("");
+
+  const { userId, login, avatar } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -32,12 +39,12 @@ const CreatePostsScreen = ({ navigation }) => {
         console.log("Permission to access location was denied");
       }
 
-      let locationData = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: locationData.coords.latitude,
-        longitude: locationData.coords.longitude,
-      };
-      setLocation(coords);
+      // let locationData = await Location.getCurrentPositionAsync({});
+      // const coords = {
+      //   latitude: locationData.coords.latitude,
+      //   longitude: locationData.coords.longitude,
+      // };
+      // setLocation(coords);
     })();
   }, []);
 
@@ -48,7 +55,9 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const sendPhoto = async () => {
-    navigation.navigate("DefaultPosts", { photo, location, titlePhoto, place });
+    // navigation.navigate("DefaultPosts", { photo, location, titlePhoto, place });
+    uploadPostToServer();
+    navigation.navigate("DefaultPosts");
     setPhoto("");
     setTitlePhoto("");
     setLocation("");
@@ -62,12 +71,39 @@ const CreatePostsScreen = ({ navigation }) => {
     setPlace("");
   };
 
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    const createdDate = Date.now();
+
+    await addDoc(collection(db, `posts`), {
+      photo,
+      titlePhoto,
+      location,
+      place,
+      userId,
+      login,
+      avatar,
+      createdDate,
+      likes: 0,
+    });
+  };
+
   if (hasPermission === null) {
     return <View />;
   }
   if (hasPermission === false) {
     return <Text>Доступ до камери не наданий!</Text>;
   }
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const uniquePostId = Date.now().toString();
+    const imageRef = ref(storage, `postImage/${uniquePostId}`);
+    await uploadBytes(imageRef, file);
+    const processedPhoto = await getDownloadURL(imageRef);
+    return processedPhoto;
+  };
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer}>
