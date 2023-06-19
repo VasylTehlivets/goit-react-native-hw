@@ -15,8 +15,8 @@ const firebaseConfig = {
   projectId: "rn-fire-e9193",
   storageBucket: "rn-fire-e9193.appspot.com",
   messagingSenderId: "1051231799587",
-  appId: "1:1051231799587:web:5e97794e99c5a951f8e496",
-  measurementId: "G-3RVFHP488V",
+  appId: "1:1051231799587:web:3c91e9fe3d66e718f8e496",
+  measurementId: "G-D8125DJV6B",
 };
 
 // Initialize Firebase
